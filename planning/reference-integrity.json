@@ -1,0 +1,18 @@
+{
+  "algorithm": "SHA256",
+  "verified_date": "2026-10-05",
+  "references": [
+    {
+      "file": "references/originals/front-closed.png",
+      "original_attachment": "codex-clipboard-9b52af09-b8b6-4580-8e0c-a426c555c182.png",
+      "sha256": "FAB5E92DDCC2B7141E9BBE29CD4B7E7860992FB1C78626507D43388362ABB11D",
+      "matches_original": true
+    },
+    {
+      "file": "references/originals/front-left-open.png",
+      "original_attachment": "codex-clipboard-2dd020c0-9ead-49b7-b097-e1e367533c38.png",
+      "sha256": "B64B4ECFC29819EF826FC0B02AC82D04EAC0A6938C2A0ABF3E0F31582602F754",
+      "matches_original": true
+    }
+  ]
+}

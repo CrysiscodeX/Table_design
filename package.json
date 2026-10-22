@@ -1,0 +1,16 @@
+{
+  "name": "default-table-design",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node models/threejs/server.mjs",
+    "drawings": "node drafts/svg/generate.mjs",
+    "export:model": "node exports/threejs/export-model.mjs",
+    "check": "node --test checks/design.test.mjs",
+    "check:browser": "playwright test",
+    "verify": "npm run check && npm run drawings && npm run export:model && npm run check:browser"
+  },
+  "dependencies": { "three": "0.186.1" },
+  "devDependencies": { "@playwright/test": "1.63.0" }
+}

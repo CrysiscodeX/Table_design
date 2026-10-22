@@ -1,0 +1,47 @@
+import {test,expect} from '@playwright/test';
+import fs from 'node:fs/promises';
+test('Loads high-detail desk, moves drawers, selects parts, resizes and exports valid assets',async({page})=>{
+  const errors=[];page.on('pageerror',e=>errors.push(e.message));
+  await page.goto('/');await page.waitForFunction(()=>document.body.dataset.modelReady==='true');
+  await expect(page.locator('#model-status')).toContainText('High detail');
+  expect(await page.evaluate(()=>window.deskDraft.model.design.drawers.length)).toBe(9);
+  await page.screenshot({path:'exports/screenshots/viewer-closed.png',fullPage:true});
+  const canvas=page.locator('#canvas-container'),r=await canvas.boundingBox(),cx=r.x+r.width*.5,cy=r.y+r.height*.5;
+  const initialCamera=await page.evaluate(()=>window.deskDraft.camera.position.toArray());
+  await page.mouse.move(cx,cy);await page.mouse.down();await page.mouse.move(cx+85,cy+25,{steps:8});await page.mouse.up();
+  await expect.poll(()=>page.evaluate(p=>window.deskDraft.camera.position.toArray().reduce((s,v,i)=>s+Math.abs(v-p[i]),0),initialCamera)).toBeGreaterThan(5);
+  const oldDistance=await page.evaluate(()=>window.deskDraft.camera.position.distanceTo({x:window.deskDraft.target[0],y:window.deskDraft.target[1],z:window.deskDraft.target[2]}));
+  await page.mouse.wheel(0,250);
+  await expect.poll(()=>page.evaluate(()=>window.deskDraft.camera.position.distanceTo({x:window.deskDraft.target[0],y:window.deskDraft.target[1],z:window.deskDraft.target[2]}))).toBeGreaterThan(oldDistance+1);
+  const oldTarget=await page.evaluate(()=>window.deskDraft.target);
+  await page.mouse.down({button:'right'});await page.mouse.move(cx+120,cy+45,{steps:6});await page.mouse.up({button:'right'});
+  await expect.poll(()=>page.evaluate(p=>window.deskDraft.target.reduce((s,v,i)=>s+Math.abs(v-p[i]),0),oldTarget)).toBeGreaterThan(1);
+  await page.locator('#view').selectOption('front');await page.locator('#view').selectOption('perspective');
+  await page.locator('#drawers').fill('70');await expect(page.locator('#drawers-value')).toHaveText('70%');
+  const motion=await page.evaluate(()=>{const m=window.deskDraft.model;return ['D-L3-FRONT','D-L3-BACK','D-L3-ORN-mask-nose'].map(id=>m.meshes.get(id).position.z-m.design.componentMap.get(id).pos[2]);});
+  expect(motion[0]).toBeCloseTo(motion[1],5);expect(motion[1]).toBeCloseTo(motion[2],5);
+  await page.locator('#component').selectOption('D-L3');await expect(page.locator('#selected')).toContainText('D-L3');
+  await page.locator('#component').selectOption('');
+  await page.screenshot({path:'exports/screenshots/viewer-open.png',fullPage:true});
+  await page.locator('#explode').fill('100');expect(await page.evaluate(()=>window.deskDraft.state.explode)).toBe(1);
+  await page.screenshot({path:'exports/screenshots/viewer-exploded.png',fullPage:true});
+  await page.locator('#explode').fill('0');
+  const details=page.locator('details').filter({has:page.locator('summary', {hasText:'Size and detail'})});await details.locator('summary').click();
+  await page.locator('#scale').fill('0.5');await page.getByRole('button',{name:'Apply dimensions'}).click();
+  await expect(page.locator('#size-label')).toHaveText('700 × 375 × 390 mm',{timeout:60000});
+  await page.locator('#width').fill('1800');await page.locator('#depth').fill('900');await page.locator('#height').fill('1000');await page.locator('#scale').fill('1');await page.getByRole('button',{name:'Apply dimensions'}).click();
+  await expect(page.locator('#size-label')).toHaveText('1800 × 900 × 1000 mm',{timeout:60000});
+  await page.getByRole('button',{name:'Reset draft size'}).click();await expect(page.locator('#size-label')).toHaveText('1400 × 750 × 780 mm',{timeout:60000});
+  await page.locator('#view').selectOption('front');await page.screenshot({path:'exports/screenshots/viewer-front.png',fullPage:true});
+  await page.locator('summary').filter({hasText:'Export this draft'}).click();
+  for(const [button,name] of [['SVG preset view','tested-front.svg'],['Dimension settings','tested-dimensions.json'],['PNG current view','tested-current-view.png'],['Three.js model JSON','tested-threejs-model.json']]) {
+    const promise=page.waitForEvent('download');await page.getByRole('button',{name:button,exact:true}).click();const download=await promise;await download.saveAs('checks/'+name);
+    const bytes=await fs.readFile('checks/'+name);expect(bytes.length).toBeGreaterThan(name.endsWith('.json')?20:100);
+    if(name.endsWith('.json'))JSON.parse(bytes.toString());if(name.endsWith('.svg'))expect(bytes.toString()).toContain('<svg');
+  }
+  for(const a of await page.locator('.drawing-grid a').all())expect((await page.request.get(await a.getAttribute('href'))).ok()).toBeTruthy();
+  await page.setViewportSize({width:375,height:900});await expect(page.locator('#canvas-container')).toBeVisible();
+  expect(await page.evaluate(()=>document.documentElement.scrollWidth<=window.innerWidth)).toBeTruthy();
+  await page.screenshot({path:'exports/screenshots/viewer-mobile.png',fullPage:true});
+  expect(errors).toEqual([]);
+});

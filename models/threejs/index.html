@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Default table design — Draft 01</title>
+  <link rel="stylesheet" href="/models/threejs/style.css">
+  <script type="importmap">{"imports":{"three":"/node_modules/three/build/three.module.js","three/addons/":"/node_modules/three/examples/jsm/"}}</script>
+</head>
+<body>
+<header class="masthead"><div><p class="eyebrow">REFERENCE STUDY / 01</p><h1>Default table design</h1><p class="subtitle">Nine-drawer carved pedestal desk</p></div><div class="draft-tag">FIRST DRAFT <span>Dimensions provisional</span></div></header>
+<main>
+  <section class="workspace" aria-label="Interactive desk model">
+    <aside class="sidebar">
+      <h2>Inspect the design</h2>
+      <label for="view">View</label><select id="view"><option value="perspective">Front-left perspective</option><option value="front">Front elevation</option><option value="left">Left elevation</option><option value="top">Top view</option></select>
+      <div class="field-head"><label for="drawers">Open drawers</label><output id="drawers-value">0%</output></div><input id="drawers" type="range" min="0" max="100" value="0">
+      <div class="field-head"><label for="explode">Exploded assembly</label><output id="explode-value">0%</output></div><input id="explode" type="range" min="0" max="100" value="0">
+      <label for="component">Component</label><select id="component"><option value="">Complete desk</option></select>
+      <div id="selected" class="selected" aria-live="polite">Select a part, or click the model to inspect it.</div>
+      <details><summary>Size and detail</summary>
+        <form id="dimensions">
+          <div class="dimension-grid"><label>Width (mm)<input id="width" name="width" type="number" min="700" max="4000" value="1400" required></label><label>Depth (mm)<input id="depth" name="depth" type="number" min="400" max="2000" value="750" required></label><label>Height (mm)<input id="height" name="height" type="number" min="400" max="1800" value="780" required></label><label>Uniform scale<input id="scale" name="scale" type="number" min="0.1" max="5" step="0.05" value="1" required></label></div>
+          <label for="quality">Geometry detail</label><select id="quality"><option value="high">High — master detail</option><option value="preview">Preview — lighter geometry</option></select>
+          <p class="help">Scale preserves proportions. Changing width, depth, or height rebuilds the structure; masks keep their aspect ratio.</p>
+          <button type="submit" class="primary">Apply dimensions</button><button type="button" id="reset">Reset draft size</button>
+        </form>
+      </details>
+      <details><summary>Export this draft</summary><div class="export-buttons"><button id="export-svg">SVG preset view</button><button id="export-json">Three.js model JSON</button><button id="export-config">Dimension settings</button><button id="export-image">PNG current view</button></div></details>
+      <p id="error" role="alert" hidden></p>
+      <p class="help assumption">Carving is interpreted from photos. Rear construction and four rear feet are inferred.</p>
+    </aside>
+    <div class="stage"><div class="stage-top"><span id="size-label">1400 × 750 × 780 mm</span><span id="model-status" role="status">Building detailed model…</span></div><div id="canvas-container" aria-label="3D model. Drag to orbit; wheel to zoom; right drag to pan."></div><div class="stage-bottom"><span>Drag to orbit · scroll to zoom · right-drag to pan</span><span>9 DRAWERS / 2 PEDESTALS</span></div></div>
+  </section>
+  <section class="drawing-section"><div class="section-head"><div><p class="eyebrow">EDITABLE VECTOR DRAWINGS</p><h2>Views & carving studies</h2></div><a href="/drafts/documents/project-design-v01.md">Read the project design document ↗</a></div><div class="drawing-grid">
+    <a href="/exports/svg/front-elevation.svg" target="_blank"><img src="/exports/svg/front-elevation.svg" alt="Front elevation with nine closed drawers"><span>Front elevation</span></a>
+    <a href="/exports/svg/left-elevation.svg" target="_blank"><img src="/exports/svg/left-elevation.svg" alt="Left elevation with framed panels"><span>Left elevation</span></a>
+    <a href="/exports/svg/top-view.svg" target="_blank"><img src="/exports/svg/top-view.svg" alt="Top view with dark inset"><span>Top view</span></a>
+    <a href="/exports/svg/front-left-closed.svg" target="_blank"><img src="/exports/svg/front-left-closed.svg" alt="Front-left closed drawer view"><span>Front-left / closed</span></a>
+    <a href="/exports/svg/front-left-open.svg" target="_blank"><img src="/exports/svg/front-left-open.svg" alt="Front-left view with open drawers"><span>Front-left / open</span></a>
+    <a href="/exports/svg/ornament-studies.svg" target="_blank"><img src="/exports/svg/ornament-studies.svg" alt="Enlarged editable mask and foliage studies"><span>Carving studies</span></a>
+    <a href="/exports/svg/exploded-assembly.svg" target="_blank"><img src="/exports/svg/exploded-assembly.svg" alt="Exploded assembly of top and pedestals"><span>Exploded assembly</span></a>
+  </div></section>
+  <section class="references"><div><p class="eyebrow">SOURCE OF TRUTH</p><h2>One desk, two angles</h2><p>Observed front features guide the draft. Dimensions, relief depths, joinery, timber, and top covering remain unverified.</p><a href="/planning/parts-breakdown.csv">Component inventory ↗</a></div><a href="/references/originals/front-closed.png" target="_blank"><img src="/references/originals/front-closed.png" alt="Original photo of the desk with drawers closed"></a><a href="/references/originals/front-left-open.png" target="_blank"><img src="/references/originals/front-left-open.png" alt="Original angled photo with drawers open"></a></section>
+</main>
+<footer>DEFAULT TABLE DESIGN · DRAFT 01 · millimetres · photo-based interpretation</footer>
+<script type="module" src="/models/threejs/viewer.mjs"></script>
+</body></html>
